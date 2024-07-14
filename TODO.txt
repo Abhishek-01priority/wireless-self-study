@@ -1,5 +1,6 @@
 Chapter 3:
-	1) Implementation of Clarke's model and how to use Clarke's model
-	2) AWGN vs Rayleigh probability of Error -- done
-	3) Rayleigh fading with and without interleaving
+	1) Implementation of Clarke's model and how to use Clarke's model - DONE
+	2) AWGN vs Rayleigh probability of Error - DONE
+	3) Rayleigh fading with and without interleaving - DONE
 	4) Rotation coding vs non-rotation codes simulation in fading channel
+	5) Jake's model simulation
