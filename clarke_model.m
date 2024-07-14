@@ -1,13 +1,31 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ==================================================================
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% =========================================================================
 % File to simulate clarkes model. The code has been written 
 % as described in "Wireless Communications - Rappaort" page 183
 % the transmitted signal should be convolved with 'r' to generate
 % mulitpath scenario
-% Input args: N -> Number of FFT/IFFT bins
+% Input args: N -> Number of frequency points in doppler spectrum
 %             fm -> maximum doppler shift
-% ==================================================================
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Learnings:
+%  1) the doppler spectrum reaches infinity at f = +- fm. In order
+%     to avoid that, spectrum at f = +-fm is calculated by taking 
+%     slope.
+%  2) clarke model gives complex channel gains as output that the 
+%     signal should be modulated with.
+%  3) After coding I found that `r` has very low variance which implied
+%     signal apart from deep fade events was going to be serverly faded.
+%     I also found a video [Lecture 29 Introduction to Wireless and
+%     Cellular system], where the variance of `r` is supposed to be 
+%     0.5. Hence, `r` is multiplied by a gain that makes its variance
+%     0.5.
+%  4) In clarke's model, the fading channel is created for a duration 
+%     of Nifft * Ts seconds. This duration is dependent on max doppler
+%     as well as number frequency points in doppler spectrum. Hence, 
+%     to create a fading for only 1ms, a huge number of Nifft is required.
+%     And to generate huge amount of Nifft, tweaking wrt N and fm is needed.
+%     This interdependcies are a major drawback of clarke's model.
+% =========================================================================
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [r, Nifft] = clarke_model(N, fm)
   Ts = 5.15e-6; % sampling time
   N = N; % number of frequency domain points to represent baseband doppler
@@ -42,8 +60,11 @@ function [r, Nifft] = clarke_model(N, fm)
   ifft_I_noise = ( ifft(doppler_spread_I_noise, Nifft) ) .^ 2;
   ifft_Q_noise = ( 1i * ifft(doppler_spread_Q_noise, Nifft) ) .^ 2;
   
-  r_squared = (sqrt( 1 / (2*var(ifft_I_noise)) ) * ifft_I_noise) + ...
-              (sqrt( 1 / (2*var(ifft_Q_noise)) ) * ifft_Q_noise);
+  r_squared = ifft_I_noise + ifft_Q_noise;
   
   r = sqrt(r_squared);
+  
+  r = 1 / (sqrt ( 2 * var(real(r)) )) * real(r) + ...
+      1 / (sqrt ( 2 * var(imag(r)) )) * imag(r);
+
 end% function end
