@@ -64,7 +64,9 @@ function [r, Nifft] = clarke_model(N, fm)
   
   r = sqrt(r_squared);
   
-  r = 1 / (sqrt ( 2 * var(real(r)) )) * real(r) + ...
-      1 / (sqrt ( 2 * var(imag(r)) )) * imag(r);
+  %TODO: Should the entire signal be scaled ? or individual components
+  %r = 1 / (sqrt ( 2 * var(real(r)) )) * real(r) + ...
+      %1 / (sqrt ( 2 * var(imag(r)) )) * imag(r);
+  r = 1 / (sqrt( 2 * var(r) )) * r;
 
 end% function end

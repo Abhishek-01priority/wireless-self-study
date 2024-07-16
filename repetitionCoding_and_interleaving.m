@@ -116,6 +116,7 @@ for s = 1:length(snr_in_dB)
 end % for end
 
 % plot
+figure;
 semilogy(snr_in_dB, Pe_repetition, '-ko', 'MarkerFaceColor', 'k')
 hold on;
 semilogy(snr_in_dB, Pe_interleaved, '-r^', 'MarkerFaceColor', 'r')
